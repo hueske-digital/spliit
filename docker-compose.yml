@@ -1,10 +1,14 @@
 services:
   app:
-    image: spliit:latest
+    image: crazymax/spliit
     restart: unless-stopped
     environment:
-      - POSTGRES_PRISMA_URL=postgresql://spliit:spliit@db:5432/spliit
-      - POSTGRES_URL_NON_POOLING=postgresql://spliit:spliit@db:5432/spliit
+      - TZ=Europe/Berlin
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=spliit
+      - POSTGRES_USER=spliit
+      - POSTGRES_PASSWORD=spliit
     volumes:
       - app_data:/data
     networks:
@@ -17,6 +21,7 @@ services:
     image: postgres:18-alpine
     restart: unless-stopped
     environment:
+      - TZ=Europe/Berlin
       - POSTGRES_USER=spliit
       - POSTGRES_PASSWORD=spliit
       - POSTGRES_DB=spliit
