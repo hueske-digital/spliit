@@ -1,0 +1,40 @@
+services:
+  app:
+    image: spliit:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PRISMA_URL=postgresql://spliit:spliit@db:5432/spliit
+      - POSTGRES_URL_NON_POOLING=postgresql://spliit:spliit@db:5432/spliit
+    volumes:
+      - app_data:/data
+    networks:
+      default:
+      proxy_apps:
+    depends_on:
+      - db
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=spliit
+      - POSTGRES_PASSWORD=spliit
+      - POSTGRES_DB=spliit
+    volumes:
+      - db_data:/var/lib/postgresql
+    networks:
+      default:
+    labels:
+      ofelia.restart: "true"
+      ofelia.enabled: "true"
+      ofelia.job-exec.vaultwardendbbackup.schedule: "0 0 1 * * *"
+      ofelia.job-exec.vaultwardendbbackup.command: "sh -c 'pg_dumpall -U vaultwarden -f /var/lib/postgresql/data/backup.sql'"
+
+volumes:
+  app_data:
+  db_data:
+
+networks:
+  proxy_apps:
+    name: proxy_apps
+    external: true
